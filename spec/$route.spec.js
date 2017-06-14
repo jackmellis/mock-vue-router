@@ -70,3 +70,30 @@ test('updating the route changes the current route without replacing the object 
   $router.push('/users/edit');
   t.is($route.path, '/users/edit');
 });
+
+test('has the name of the route', t => {
+  let routes = [
+    {
+      path : '/users/add',
+      name : 'addUser'
+    }
+  ];
+  let {$router, $route} = mock(routes);
+
+  t.is($route.name, 'addUser');
+});
+
+test('has the routes meta data', t => {
+  let routes = [
+    {
+      path : '/users/add',
+      meta : {
+        title : 'some title'
+      }
+    }
+  ];
+  let {$router, $route} = mock(routes);
+
+  t.truthy($route.meta);
+  t.is($route.meta.title, 'some title');
+});

@@ -16,6 +16,8 @@ function Route(fullPath, matches) {
   this.query = {};
   this.hash = '';
   this.props = false;
+  this.name = match.name;
+  this.meta = match.meta;
 
   // Get Query
   var path = fullPath.split('?');
