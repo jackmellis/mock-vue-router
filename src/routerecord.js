@@ -7,7 +7,11 @@ function RouteRecord(config, pathParts, router, parent) {
   Object.assign(this, config);
 
   pathParts = pathParts.concat(config.path);
-  this.fullPath = pathParts.join('/');
+  this.fullPath = pathParts
+    .filter(function (part) {
+      return !!part;
+    })
+    .join('/');
   this.exp = pathToRegexp(this.fullPath);
   this.parent = parent;
 

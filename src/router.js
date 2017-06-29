@@ -40,9 +40,9 @@ Router.prototype.afterEach = function (callback) {
   this.$afterHooks.push(callback);
 };
 
-Router.prototype.push = function (path) {
-  path = this.$buildPath(path);
-  var matches = this.$findMatchingRouteRecords(path);
+Router.prototype.push = function (config) {
+  var path = this.$buildPath(config);
+  var matches = this.$findMatchingRouteRecords(path, config && config.name);
   var route = new Route(path, matches);
 
   if (!this.$coreRoute){
@@ -56,9 +56,9 @@ Router.prototype.push = function (path) {
   }.bind(this));
 };
 
-Router.prototype.replace = function (path) {
-  path = this.$buildPath(path);
-  var matches = this.$findMatchingRouteRecords(path);
+Router.prototype.replace = function (config) {
+  var path = this.$buildPath(config);
+  var matches = this.$findMatchingRouteRecords(path, config && config.name);
   var route = new Route(path, matches);
   var n = this.$position;
 
@@ -134,13 +134,13 @@ Router.prototype.$buildPath = function (options) {
   return path;
 };
 
-Router.prototype.$findMatchingRouteRecords = function (path) {
+Router.prototype.$findMatchingRouteRecords = function (path, name) {
   path = path.replace(/[\?\#].*/, '');
   var result = [];
   var allRoutes = this.$getAllRoutes(this.routes);
   var found;
   for (var x = 0, l = allRoutes.length; x < l; x++){
-    if (allRoutes[x].exp.test(path)){
+    if (allRoutes[x].exp.test(path) && (!name || allRoutes[x].name === name)){
       found = allRoutes[x];
       break;
     }
@@ -156,10 +156,11 @@ Router.prototype.$getAllRoutes = function (routes) {
   var self = this;
   var result = [];
   routes.forEach(function (route) {
-    result.push(route);
+    // result.push(route);
     if (route.children){
       result = result.concat(self.$getAllRoutes(route.children));
     }
+    result.push(route);
   });
   return result;
 };

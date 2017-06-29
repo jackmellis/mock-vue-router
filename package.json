@@ -1,6 +1,6 @@
 {
   "name": "mock-vue-router",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A mock vue router to aid unit testing",
   "main": "src/index.js",
   "scripts": {

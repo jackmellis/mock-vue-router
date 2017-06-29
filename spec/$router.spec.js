@@ -110,6 +110,169 @@ test.group('push', test => {
     t.is($route.fullPath, '/user/4#myid?foo=1&bah=2');
   });
 
+  test('navigates to a child route', t => {
+    let {$router, $route} = mock([
+      {
+        path : '/',
+        name : 'home'
+      },
+      {
+        path : '/user',
+        name : 'parent',
+        children : [
+          {
+            path : ':userId',
+            name : 'child'
+          }
+        ]
+      }
+    ]);
+
+    $router.push('/user');
+    t.is($route.path, '/user');
+    t.is($route.name, 'parent');
+
+    $router.push('/user/4');
+    t.is($route.path, '/user/4');
+    t.is($route.name, 'child');
+  });
+
+  test('navigates to a child route with a default path', t => {
+    let {$router, $route} = mock([
+      {
+        path : '/',
+        name : 'home'
+      },
+      {
+        path : '/user',
+        name : 'parent',
+        children : [
+          {
+            path : '',
+            name : 'defaultChild'
+          },
+          {
+            path : ':userId',
+            name : 'child'
+          }
+        ]
+      }
+    ]);
+
+    $router.push('/user');
+    t.is($route.name, 'defaultChild');
+  });
+
+  test('navigates to a named child route', t => {
+    let {$router, $route} = mock([
+      {
+        path : '/',
+        name : 'home'
+      },
+      {
+        path : '/user',
+        name : 'parent',
+        children : [
+          {
+            path : ':userId',
+            name : 'child'
+          }
+        ]
+      }
+    ]);
+
+    $router.push({name : 'parent'});
+    t.is($route.path, '/user');
+    t.is($route.name, 'parent');
+
+    $router.push({name : 'child', params : { userId : '4' }});
+    t.is($route.path, '/user/4');
+    t.is($route.name, 'child');
+    t.is($route.params.userId, '4');
+  });
+
+  test('navigates to a named child route with default path', t => {
+    let {$router, $route} = mock([
+      {
+        path : '/',
+        name : 'home'
+      },
+      {
+        path : '/user',
+        name : 'parent',
+        children : [
+          {
+            path : '',
+            name : 'defaultChild'
+          },
+          {
+            path : ':userId',
+            name : 'child'
+          }
+        ]
+      }
+    ]);
+
+    $router.push({name : 'parent'});
+    t.is($route.path, '/user');
+    t.is($route.name, 'parent');
+
+    $router.push({name : 'defaultChild'});
+    t.is($route.path, '/user');
+    t.is($route.name, 'defaultChild');
+  });
+
+  test('navigates to deeply nested child route', t => {
+    let {$router, $route} = mock([
+      {
+        path : '/'
+      },
+      {
+        path : '/user',
+        name : 'user',
+        children : [
+          {
+            path : ':userId',
+            name : 'viewUser',
+            children : [
+              {
+                path : '',
+                name : 'viewUserDefault',
+                children : [
+                  {
+                    path : 'edit',
+                    name : 'editUser',
+                    children : [
+                      {
+                        path : '',
+                        name : 'editUserDefault'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]);
+
+    $router.push({name : 'user'});
+    t.is($route.path, '/user');
+
+    $router.push({name : 'viewUser', params : {userId:'4'}});
+    t.is($route.path, '/user/4');
+
+    $router.push({name : 'viewUserDefault', params : {userId:'4'}});
+    t.is($route.path, '/user/4');
+
+    $router.push({name : 'editUser', params : {userId:'4'}});
+    t.is($route.path, '/user/4/edit');
+
+    $router.push({name : 'editUserDefault', params : {userId:'4'}});
+    t.is($route.path, '/user/4/edit');
+  });
+
   test('pushes an invalid route', t => {
     let {$router, $route} = mock();
     $router.push('/users/4');
